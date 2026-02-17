@@ -1,0 +1,7 @@
+{
+  "name": "@stock-analyzer/shared",
+  "version": "1.0.0",
+  "private": true,
+  "main": "types/stock.ts",
+  "types": "types/stock.ts"
+}

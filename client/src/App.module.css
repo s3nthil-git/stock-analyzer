@@ -1,0 +1,27 @@
+.app {
+  min-height: 100vh;
+  background: #f1f5f9;
+}
+
+.header {
+  text-align: center;
+  padding: 2rem 1rem 1rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.75rem;
+  color: #1e293b;
+}
+
+.subtitle {
+  margin: 0.25rem 0 0;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.main {
+  padding: 1.5rem 1rem 3rem;
+  max-width: 960px;
+  margin: 0 auto;
+}
