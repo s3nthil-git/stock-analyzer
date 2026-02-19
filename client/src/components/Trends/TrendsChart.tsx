@@ -42,7 +42,7 @@ export function TrendsChart({ metrics }: TrendsChartProps) {
                 />
                 <YAxis hide domain={['auto', 'auto']} />
                 <Tooltip
-                  formatter={(value: number | string) => [formatMetricValue(Number(value), format), metric.label]}
+                  formatter={(value: number | string | undefined) => [formatMetricValue(value !== undefined ? Number(value) : null, format), metric.label]}
                   contentStyle={{ fontSize: '0.8rem', borderRadius: 8, border: '1px solid #e2e8f0' }}
                   labelStyle={{ fontWeight: 600, color: '#334155' }}
                 />
