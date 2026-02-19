@@ -42,3 +42,36 @@ export interface FMPRSIEntry {
   date: string;
   [key: string]: unknown;
 }
+
+export interface FMPIncomeStatement {
+  period: string;
+  fiscalYear: string;
+  revenue: number | null;
+  epsDiluted: number | null;
+  grossProfit: number | null;
+  operatingIncome: number | null;
+  netIncome: number | null;
+  [key: string]: unknown;
+}
+
+export interface FMPBalanceSheet {
+  period: string;
+  fiscalYear: string;
+  totalDebt: number | null;
+  totalStockholdersEquity: number | null;
+  [key: string]: unknown;
+}
+
+export interface FMPCashFlow {
+  period: string;
+  fiscalYear: string;
+  freeCashFlow: number | null;
+  [key: string]: unknown;
+}
+
+export interface FMPIncomeGrowthQuarterly {
+  period: string;
+  fiscalYear: string;
+  growthRevenue: number | null;
+  [key: string]: unknown;
+}

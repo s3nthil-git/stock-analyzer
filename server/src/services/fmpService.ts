@@ -19,7 +19,7 @@ class FMPError extends Error {
   }
 }
 
-async function fmpGet<T>(path: string, params: Record<string, string> = {}): Promise<T> {
+export async function fmpGet<T>(path: string, params: Record<string, string> = {}): Promise<T> {
   const response = await axios.get(`${BASE_URL}${path}`, {
     params: { ...params, apikey: getApiKey() },
     timeout: REQUEST_TIMEOUT,
@@ -32,7 +32,7 @@ async function fmpGet<T>(path: string, params: Record<string, string> = {}): Pro
   return response.data;
 }
 
-function safeNum(val: unknown): number | null {
+export function safeNum(val: unknown): number | null {
   if (val === null || val === undefined || val === '') return null;
   const n = Number(val);
   return isFinite(n) ? n : null;

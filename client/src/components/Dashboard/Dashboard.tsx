@@ -1,13 +1,16 @@
 import type { StockData } from '../../types/stock';
+import type { QuarterlyData } from '../../types/quarterly';
 import { CompanyProfile } from '../CompanyProfile/CompanyProfile';
 import { MetricSection } from '../MetricSection/MetricSection';
+import { TrendsSection } from '../Trends/TrendsSection';
 import styles from './Dashboard.module.css';
 
 interface DashboardProps {
   data: StockData;
+  quarterlyData: QuarterlyData | null;
 }
 
-export function Dashboard({ data }: DashboardProps) {
+export function Dashboard({ data, quarterlyData }: DashboardProps) {
   const timestamp = new Date(data.dataAsOf).toLocaleString();
 
   return (
@@ -22,6 +25,7 @@ export function Dashboard({ data }: DashboardProps) {
           <MetricSection key={category.title} category={category} />
         ))}
       </div>
+      <TrendsSection data={quarterlyData} />
     </div>
   );
 }

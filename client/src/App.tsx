@@ -6,7 +6,7 @@ import { useStockData } from './hooks/useStockData';
 import styles from './App.module.css';
 
 function App() {
-  const { data, loading, error, lookup } = useStockData();
+  const { data, quarterlyData, loading, error, lookup } = useStockData();
 
   return (
     <div className={styles.app}>
@@ -18,7 +18,7 @@ function App() {
         <SearchBar onSearch={lookup} loading={loading} />
         {loading && <LoadingSpinner />}
         {error && <ErrorMessage message={error} />}
-        {data && <Dashboard data={data} />}
+        {data && <Dashboard data={data} quarterlyData={quarterlyData} />}
       </main>
     </div>
   );
