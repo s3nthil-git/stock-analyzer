@@ -13,9 +13,9 @@ Stock Analyzer — a new project using Firebase. Codebase is currently empty and
 
 For non-trivial changes, follow this workflow. Skip to step 3 for small edits.
 
-### 0. Discover — `/agentic-coding:vision-brief`
+### 0. Discover — `/agentic-coding:writing-vision-briefs`
 
-For fuzzy or early-stage ideas, use the `/agentic-coding:vision-brief` slash command to create a Vision Brief before writing a PRD. It:
+For fuzzy or early-stage ideas, use the `/agentic-coding:writing-vision-briefs` slash command to create a Vision Brief before writing a PRD. It:
 - Walks you through the problem, users, vision, capabilities, and success criteria in plain language
 - Assesses the scope — is this one feature or multiple?
 - Breaks bigger visions into **epics** (major themes) and **features** (individual buildable pieces)
@@ -25,18 +25,22 @@ For fuzzy or early-stage ideas, use the `/agentic-coding:vision-brief` slash com
 
 If the vision is small enough to be a single feature, the breakdown is skipped.
 
+Record architectural decisions about scope or direction (see [Architecture Decision Records](#architecture-decision-records) below).
+
 **Skip this step if** you already know exactly what single feature you want to build. Go straight to Step 1.
 
-### 1. Define — `/agentic-coding:feature-prd`
+### 1. Define — `/agentic-coding:writing-feature-prds`
 
-Use the `/agentic-coding:feature-prd` slash command to create a PRD for **one feature**. It will:
+Use the `/agentic-coding:writing-feature-prds` slash command to create a PRD for **one feature**. It will:
 - Check if you're coming from a Vision Brief — if so, scope the PRD to your chosen feature
 - If starting fresh, gather requirements (and redirect to Step 0 if the idea is too big for one feature)
-- Create a PRD at `specs/<feature-name>.md` using the template
+- Create a PRD at `specs/<feature-name>-prd.md` using the template
 - Stress-test the PRD for edge cases and ambiguity
 - Create a GitHub issue linking back to the PRD (and referencing the epic issue if applicable)
 
 For early-stage ideas that need exploration, use the `brainstorming` superpowers skill first to validate the approach before writing a PRD.
+
+Record scope and design decisions (see [Architecture Decision Records](#architecture-decision-records) below).
 
 **Skip specs for:** Bug fixes, trivial changes, urgent hotfixes.
 
@@ -46,15 +50,17 @@ After the PRD is approved, **enter plan mode** to design the implementation befo
 
 - For complex features, use the `code-explorer` agent (from `feature-dev`) to trace execution paths and map dependencies, then the `code-architect` agent to design the architecture before planning
 - The `writing-plans` superpowers skill converts specs into bite-sized tasks with exact file paths, code snippets, and commands
-- Plans are saved to `.claude/plans/<feature-name>.md`
-- **Always save the plan file before starting implementation** — even if the plan was provided inline or from a prior session, persist it first
+- Plans are saved to `specs/<feature-name>-plan.md` (alongside the PRD)
+- **Always save the plan file before starting implementation** — even if the plan was provided inline or from a prior session, persist it to `specs/` first
 - For features needing workspace isolation, use `using-git-worktrees` to create a clean worktree before starting
+
+Record implementation approach decisions (see [Architecture Decision Records](#architecture-decision-records) below).
 
 ### 3. Implement — `/feature-dev`
 
 Use the `/feature-dev` slash command, referencing the spec and issue:
 ```
-/feature-dev specs/feature-name.md (issue #123)
+/feature-dev specs/feature-name-prd.md (issue #123)
 ```
 
 **Implementation approach:**
@@ -130,14 +136,43 @@ When writing acceptance criteria:
 - Use active voice ("Error message is displayed" not "User sees error")
 - Include concrete expected values when possible
 
+## Architecture Decision Records
+
+When choosing between meaningful alternatives during Steps 0–2, capture the decision as an ADR in `specs/decisions/`. Not every feature needs one — only when there's a real fork in the road (e.g., "JWT vs session auth", "one plugin or two", "flat structure vs nested").
+
+**File naming:** `specs/decisions/NNN-short-title.md` (zero-padded, e.g., `001-plan-files-alongside-prds.md`)
+
+**Template:**
+
+```markdown
+# NNN — Title
+
+**Status:** Accepted | Superseded by NNN
+**Date:** YYYY-MM-DD
+**Step:** Discover | Define | Plan
+
+## Context
+What prompted the decision and why it matters.
+
+## Options Considered
+1. **Option A** — tradeoffs
+2. **Option B** — tradeoffs
+
+## Decision
+Which option and why.
+
+## Consequences
+What changes as a result — both positive and negative.
+```
+
 ## Slash Commands
 
 ### Core Workflow
 
 | Command | Description |
 |---------|-------------|
-| `/agentic-coding:vision-brief` | Capture a fuzzy idea as a structured Vision Brief |
-| `/agentic-coding:feature-prd` | Create a feature PRD, stress-test it, and open a GitHub issue |
+| `/agentic-coding:writing-vision-briefs` | Capture a fuzzy idea as a structured Vision Brief |
+| `/agentic-coding:writing-feature-prds` | Create a feature PRD, stress-test it, and open a GitHub issue |
 | `/feature-dev` | Guided feature development with codebase understanding |
 | `/commit` | Create a git commit |
 | `/commit-push-pr` | Commit, push, and open a PR |
@@ -190,8 +225,8 @@ Skills from the `superpowers` plugin, invoked automatically based on context:
 
 | Step | Action | Tools |
 |------|--------|-------|
-| 0. Discover | Capture idea as Vision Brief, break into epics + features | `/agentic-coding:vision-brief` (skip if single feature is clear) |
-| 1. Define | Create PRD + issue for one feature | `/agentic-coding:feature-prd` (use `brainstorming` for early ideas) |
+| 0. Discover | Capture idea as Vision Brief, break into epics + features | `/agentic-coding:writing-vision-briefs` (skip if single feature is clear) |
+| 1. Define | Create PRD + issue for one feature | `/agentic-coding:writing-feature-prds` (use `brainstorming` for early ideas) |
 | 2. Plan | Enter plan mode, explore codebase, create plan | `code-explorer` + `code-architect` agents, `writing-plans` skill |
 | 3. Implement | Build with TDD | `/feature-dev` + `test-driven-development` + `security-guidance` hook |
 | 4. Verify | Prove it works | `verification-before-completion` |
