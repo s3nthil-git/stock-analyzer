@@ -77,9 +77,9 @@ export async function getQuarterlyData(ticker: string): Promise<QuarterlyData> {
   }
 
   const [incomeData, balanceData, cashFlowData, growthData] = await Promise.all([
-    fmpGet<FMPIncomeStatement[]>('/income-statement', { symbol: ticker, period: 'quarter', limit: '4' }),
-    fmpGet<FMPBalanceSheet[]>('/balance-sheet-statement', { symbol: ticker, period: 'quarter', limit: '4' }),
-    fmpGet<FMPCashFlow[]>('/cash-flow-statement', { symbol: ticker, period: 'quarter', limit: '4' }),
+    fmpGet<FMPIncomeStatement[]>('/income-statement', { symbol: ticker, period: 'quarter', limit: '4' }).catch(() => []),
+    fmpGet<FMPBalanceSheet[]>('/balance-sheet-statement', { symbol: ticker, period: 'quarter', limit: '4' }).catch(() => []),
+    fmpGet<FMPCashFlow[]>('/cash-flow-statement', { symbol: ticker, period: 'quarter', limit: '4' }).catch(() => []),
     fmpGet<FMPIncomeGrowthQuarterly[]>('/income-statement-growth', { symbol: ticker, period: 'quarter', limit: '4' }).catch(() => []),
   ]);
 

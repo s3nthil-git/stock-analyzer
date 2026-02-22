@@ -134,8 +134,8 @@ export async function getStockData(ticker: string): Promise<StockData> {
 
   const [profileData, keyMetricsData, ratiosData, growthData, rsiData] = await Promise.all([
     fmpGet<FMPProfile[]>(`/profile`, { symbol: ticker }),
-    fmpGet<FMPKeyMetrics[]>(`/key-metrics`, { symbol: ticker, limit: '1' }),
-    fmpGet<FMPRatios[]>(`/ratios`, { symbol: ticker, limit: '1' }),
+    fmpGet<FMPKeyMetrics[]>(`/key-metrics`, { symbol: ticker, limit: '1' }).catch(() => []),
+    fmpGet<FMPRatios[]>(`/ratios`, { symbol: ticker, limit: '1' }).catch(() => []),
     fmpGet<FMPGrowth[]>(`/income-statement-growth`, { symbol: ticker, limit: '1' }).catch(() => []),
     fmpGet<FMPRSIEntry[]>(`/technical-indicators/rsi`, { symbol: ticker, periodLength: '14', timeframe: '1day' }).catch(() => []),
   ]);
