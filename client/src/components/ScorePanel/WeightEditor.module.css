@@ -1,0 +1,63 @@
+.editor {
+  margin-top: 10px;
+  padding: 10px;
+  background: #0c1520;
+  border-radius: 4px;
+  border: 1px solid #1a2a3e;
+}
+
+.hint {
+  font-size: 9px;
+  color: #4ade80;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+
+.zero {
+  opacity: 0.45;
+}
+
+.label {
+  font-size: 9px;
+  color: #888;
+  min-width: 66px;
+  flex-shrink: 0;
+}
+
+.slider {
+  flex: 1;
+  height: 3px;
+  cursor: pointer;
+  accent-color: #4a9eff;
+}
+
+.value {
+  font-size: 9px;
+  color: #aaa;
+  min-width: 28px;
+  text-align: right;
+}
+
+.resetBtn {
+  margin-top: 8px;
+  width: 100%;
+  background: #111;
+  border: 1px solid #1a2a3e;
+  color: #888;
+  font-size: 9px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.resetBtn:hover {
+  background: #1a1a2e;
+  color: #aaa;
+}
