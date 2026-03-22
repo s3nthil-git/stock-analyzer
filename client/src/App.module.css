@@ -22,6 +22,33 @@
 
 .main {
   padding: 1.5rem 1rem 3rem;
-  max-width: 960px;
+  max-width: 1200px;
   margin: 0 auto;
+}
+
+/* Two-column layout: dashboard left, score panel right */
+.dashboardLayout {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.mainContent {
+  min-width: 0; /* prevents grid blowout */
+}
+
+.scoreSidebar {
+  position: sticky;
+  top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .dashboardLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .scoreSidebar {
+    position: static;
+  }
 }

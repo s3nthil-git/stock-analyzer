@@ -1,5 +1,6 @@
 import { SearchBar } from './components/SearchBar/SearchBar';
 import { Dashboard } from './components/Dashboard/Dashboard';
+import { ScorePanel } from './components/ScorePanel/ScorePanel';
 import { ErrorMessage } from './components/ErrorMessage/ErrorMessage';
 import { LoadingSpinner } from './components/LoadingSpinner/LoadingSpinner';
 import { useStockData } from './hooks/useStockData';
@@ -18,7 +19,16 @@ function App() {
         <SearchBar onSearch={lookup} loading={loading} />
         {loading && <LoadingSpinner />}
         {error && <ErrorMessage message={error} />}
-        {data && <Dashboard data={data} quarterlyData={quarterlyData} />}
+        {data && (
+          <div className={styles.dashboardLayout}>
+            <div className={styles.mainContent}>
+              <Dashboard data={data} quarterlyData={quarterlyData} />
+            </div>
+            <div className={styles.scoreSidebar}>
+              <ScorePanel stockData={data} />
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
