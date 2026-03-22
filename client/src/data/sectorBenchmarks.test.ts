@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest';
+import type { MetricKey } from '../types/stock';
 import { sectorBenchmarks } from './sectorBenchmarks';
 
 describe('sectorBenchmarks', () => {
-  const ALL_METRIC_KEYS = [
+  const ALL_METRIC_KEYS: MetricKey[] = [
     'peRatio', 'pegRatio', 'revenueGrowth', 'epsGrowth',
     'grossMargin', 'operatingMargin', 'netMargin', 'roe',
     'debtToEquity', 'currentRatio',

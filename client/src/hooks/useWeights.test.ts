@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useWeights, rebalance, PRESETS } from './useWeights';
-import type { WeightConfig, MetricKey } from '../types/stock';
+import type { WeightConfig } from '../types/stock';
 
 // ── rebalance unit tests ────────────────────────────────────────────────────
 
