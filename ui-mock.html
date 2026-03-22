@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Analyzer — ScorePanel Mock</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .page-header { text-align: center; margin-bottom: 2rem; }
+  .page-header h1 { font-size: 1.75rem; color: #1e293b; }
+  .page-header p { color: #64748b; font-size: 0.95rem; margin-top: 0.25rem; }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 220px;
+    gap: 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    align-items: start;
+  }
+
+  .dashboard { display: flex; flex-direction: column; gap: 1rem; }
+
+  .company-card {
+    background: #0f1a2e; border: 1px solid #1a2a3e;
+    border-radius: 8px; padding: 14px 16px; color: #e2e8f0;
+  }
+  .company-name { font-weight: 700; font-size: 15px; }
+  .company-ticker { color: #4a9eff; font-size: 12px; font-weight: 600; margin-top: 2px; }
+  .company-meta { color: #64748b; font-size: 11px; margin-top: 3px; }
+
+  .metric-section { background: #fff; border-radius: 8px; padding: 14px; border: 1px solid #e2e8f0; }
+  .section-title {
+    font-size: 10px; font-weight: 700; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+  }
+  .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .metrics-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .metric-card { background: #f8fafc; border-radius: 6px; padding: 8px 10px; }
+  .metric-label { font-size: 10px; color: #94a3b8; margin-bottom: 2px; }
+  .metric-value { font-size: 14px; font-weight: 600; color: #1e293b; }
+  .metric-value.positive { color: #16a34a; }
+
+  .score-sidebar { position: sticky; top: 1rem; }
+
+  .panel {
+    background: #080d14; border: 1px solid #1a2a3e;
+    border-radius: 8px; padding: 12px; color: #e2e8f0;
+  }
+
+  .presets { display: flex; gap: 4px; margin-bottom: 12px; }
+  .preset-btn {
+    flex: 1; padding: 5px; font-size: 10px; font-weight: 600;
+    border-radius: 4px; cursor: pointer; border: 1px solid #1a1a1a;
+    background: #111; color: #666; transition: all 0.15s;
+  }
+  .preset-btn.active { background: #1a3a2e; color: #4ade80; border-color: #2a5a3e; }
+
+  .score-display { text-align: center; margin-bottom: 10px; }
+  .score-label { font-size: 10px; color: #666; margin-bottom: 2px; }
+  .score-number { font-size: 44px; font-weight: 800; line-height: 1; }
+  .score-outof { font-size: 9px; color: #555; margin-bottom: 6px; }
+  .badge {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 3px 10px; border-radius: 12px; border: 1px solid;
+  }
+
+  .progress-bar {
+    height: 6px; background: #111; border-radius: 3px;
+    overflow: hidden; margin-bottom: 3px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f87171 0%, #facc15 45%, #4ade80 100%);
+    border-radius: 3px; transition: width 0.3s ease;
+  }
+  .progress-labels {
+    display: flex; justify-content: space-between;
+    font-size: 8px; color: #444; margin-bottom: 12px;
+  }
+
+  .breakdown { margin-bottom: 10px; }
+  .breakdown-label {
+    font-size: 9px; color: #555; text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 6px;
+  }
+  .breakdown-row {
+    display: grid; grid-template-columns: 80px 24px 1fr;
+    align-items: center; gap: 5px; margin-bottom: 5px;
+  }
+  .cat-name { font-size: 9px; color: #888; }
+  .cat-score { font-size: 9px; font-weight: 600; text-align: right; }
+  .cat-bar { height: 3px; background: #111; border-radius: 2px; overflow: hidden; }
+  .cat-bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s ease; }
+
+  .adjust-btn {
+    width: 100%; background: none; border: none; color: #4a9eff;
+    font-size: 10px; cursor: pointer; padding: 6px 0;
+    border-top: 1px solid #1a1a1a; text-align: center;
+  }
+  .adjust-btn:hover { color: #60b0ff; }
+
+  .editor {
+    margin-top: 10px; padding: 10px; background: #0c1520;
+    border-radius: 4px; border: 1px solid #1a2a3e; display: none;
+  }
+  .editor.open { display: block; }
+  .editor-hint { font-size: 9px; color: #4ade80; margin-bottom: 8px; text-align: center; }
+  .weight-row { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+  .weight-row.zero { opacity: 0.45; }
+  .weight-label { font-size: 9px; color: #888; min-width: 66px; flex-shrink: 0; }
+  .weight-slider { flex: 1; cursor: pointer; accent-color: #4a9eff; }
+  .weight-value { font-size: 9px; color: #aaa; min-width: 28px; text-align: right; }
+  .reset-btn {
+    margin-top: 8px; width: 100%; background: #111;
+    border: 1px solid #1a2a3e; color: #888; font-size: 9px;
+    padding: 4px 8px; border-radius: 4px; cursor: pointer;
+  }
+  .reset-btn:hover { background: #1a1a2e; color: #aaa; }
+
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+    .score-sidebar { position: static; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Stock Analyzer</h1>
+  <p>Look up any stock and see its fundamentals at a glance</p>
+</div>
+
+<div class="layout">
+  <!-- LEFT: Dashboard -->
+  <div class="dashboard">
+    <div class="company-card">
+      <div class="company-name">Apple Inc.</div>
+      <div class="company-ticker">AAPL · $182.50</div>
+      <div class="company-meta">Technology · Consumer Electronics · NASDAQ</div>
+    </div>
+
+    <div class="metric-section">
+      <div class="section-title">Valuation</div>
+      <div class="metrics-grid">
+        <div class="metric-card"><div class="metric-label">P/E Ratio</div><div class="metric-value">28.4</div></div>
+        <div class="metric-card"><div class="metric-label">PEG Ratio</div><div class="metric-value">1.8</div></div>
+        <div class="metric-card"><div class="metric-label">Price/Book</div><div class="metric-value">44.2</div></div>
+      </div>
+    </div>
+
+    <div class="metric-section">
+      <div class="section-title">Profitability</div>
+      <div class="metrics-grid">
+        <div class="metric-card"><div class="metric-label">Gross Margin</div><div class="metric-value">43.3%</div></div>
+        <div class="metric-card"><div class="metric-label">Operating Margin</div><div class="metric-value">29.8%</div></div>
+        <div class="metric-card"><div class="metric-label">Net Margin</div><div class="metric-value">25.3%</div></div>
+        <div class="metric-card"><div class="metric-label">ROE</div><div class="metric-value">147%</div></div>
+      </div>
+    </div>
+
+    <div class="metric-section">
+      <div class="section-title">Growth</div>
+      <div class="metrics-grid-2">
+        <div class="metric-card"><div class="metric-label">Revenue Growth (YoY)</div><div class="metric-value positive">+6.7%</div></div>
+        <div class="metric-card"><div class="metric-label">EPS Growth (YoY)</div><div class="metric-value positive">+11.2%</div></div>
+      </div>
+    </div>
+
+    <div class="metric-section">
+      <div class="section-title">Financial Health</div>
+      <div class="metrics-grid-2">
+        <div class="metric-card"><div class="metric-label">Debt-to-Equity</div><div class="metric-value">1.69</div></div>
+        <div class="metric-card"><div class="metric-label">Current Ratio</div><div class="metric-value">1.04</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: ScorePanel -->
+  <div class="score-sidebar">
+    <div class="panel">
+      <div class="presets">
+        <button class="preset-btn active" id="btn-growth">Growth</button>
+        <button class="preset-btn" id="btn-value">Value</button>
+      </div>
+
+      <div class="score-display">
+        <div class="score-label">Stock Score</div>
+        <div class="score-number" id="score-number" style="color:#4ade80">—</div>
+        <div class="score-outof">out of 100</div>
+        <div class="badge" id="badge" style="color:#4ade80;border-color:#4ade80">—</div>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+      <div class="progress-labels"><span>Sell</span><span>Hold</span><span>Buy</span></div>
+
+      <div class="breakdown">
+        <div class="breakdown-label">Breakdown</div>
+        <div class="breakdown-row">
+          <span class="cat-name">Growth</span>
+          <span class="cat-score" id="cat-growth">—</span>
+          <div class="cat-bar"><div class="cat-bar-fill" id="bar-growth"></div></div>
+        </div>
+        <div class="breakdown-row">
+          <span class="cat-name">Valuation</span>
+          <span class="cat-score" id="cat-valuation">—</span>
+          <div class="cat-bar"><div class="cat-bar-fill" id="bar-valuation"></div></div>
+        </div>
+        <div class="breakdown-row">
+          <span class="cat-name">Profitability</span>
+          <span class="cat-score" id="cat-profitability">—</span>
+          <div class="cat-bar"><div class="cat-bar-fill" id="bar-profitability"></div></div>
+        </div>
+        <div class="breakdown-row">
+          <span class="cat-name">Health</span>
+          <span class="cat-score" id="cat-health">—</span>
+          <div class="cat-bar"><div class="cat-bar-fill" id="bar-health"></div></div>
+        </div>
+      </div>
+
+      <button class="adjust-btn" id="adjust-btn">⚙ Adjust weights</button>
+
+      <div class="editor" id="editor">
+        <div class="editor-hint">Drag to rebalance · Total: 100% ✓</div>
+        <div id="sliders"></div>
+        <button class="reset-btn" id="reset-btn">Reset to Growth preset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const STOCK_METRICS = {
+  peRatio: 28.4, pegRatio: 1.8,
+  revenueGrowth: 0.067, epsGrowth: 0.112,
+  grossMargin: 0.433, operatingMargin: 0.298,
+  netMargin: 0.253, roe: 1.47,
+  debtToEquity: 1.69, currentRatio: 1.04,
+};
+
+const BENCH = {
+  peRatio:         { poor: 50,   excellent: 15   },
+  pegRatio:        { poor: 3.0,  excellent: 0.5  },
+  revenueGrowth:   { poor: 0.02, excellent: 0.25 },
+  epsGrowth:       { poor: 0.02, excellent: 0.30 },
+  grossMargin:     { poor: 0.30, excellent: 0.70 },
+  operatingMargin: { poor: 0.05, excellent: 0.30 },
+  netMargin:       { poor: 0.03, excellent: 0.25 },
+  roe:             { poor: 0.05, excellent: 0.35 },
+  debtToEquity:    { poor: 2.5,  excellent: 0.3  },
+  currentRatio:    { poor: 0.8,  excellent: 2.5  },
+};
+
+const DISPLAY_LABELS = {
+  revenueGrowth: 'Rev Growth', epsGrowth: 'EPS Growth',
+  roe: 'ROE', operatingMargin: 'Op Margin',
+  peRatio: 'P/E Ratio', pegRatio: 'PEG Ratio',
+  debtToEquity: 'Debt/Equity', grossMargin: 'Gross Margin',
+  netMargin: 'Net Margin', currentRatio: 'Current Ratio',
+};
+
+const LOWER_IS_BETTER = new Set(['peRatio', 'pegRatio', 'debtToEquity']);
+
+const CATEGORY_MAP = {
+  growth:        ['revenueGrowth', 'epsGrowth'],
+  valuation:     ['peRatio', 'pegRatio'],
+  profitability: ['grossMargin', 'operatingMargin', 'netMargin', 'roe'],
+  health:        ['debtToEquity', 'currentRatio'],
+};
+
+const METRIC_ORDER = [
+  'revenueGrowth','epsGrowth','roe','operatingMargin',
+  'peRatio','pegRatio','debtToEquity','grossMargin','netMargin','currentRatio',
+];
+
+const PRESETS = {
+  growth: { revenueGrowth:25, epsGrowth:20, roe:15, operatingMargin:15, peRatio:10, pegRatio:10, debtToEquity:5, grossMargin:0, netMargin:0, currentRatio:0 },
+  value:  { peRatio:25, netMargin:20, debtToEquity:20, currentRatio:15, roe:10, grossMargin:10, revenueGrowth:0, epsGrowth:0, operatingMargin:0, pegRatio:0 },
+};
+
+let currentPreset = 'growth';
+let lastNamedPreset = 'growth';
+let weights = Object.assign({}, PRESETS.growth);
+let editorOpen = false;
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+function subScore(key) {
+  const v = STOCK_METRICS[key];
+  if (v == null) return null;
+  const { poor, excellent } = BENCH[key];
+  return LOWER_IS_BETTER.has(key)
+    ? clamp((poor - v) / (poor - excellent), 0, 1) * 100
+    : clamp((v - poor) / (excellent - poor), 0, 1) * 100;
+}
+
+function weightedAvg(keys) {
+  const active = keys.filter(k => subScore(k) !== null);
+  const tw = active.reduce((s, k) => s + weights[k], 0);
+  if (tw === 0) return null;
+  return Math.round(active.reduce((s, k) => s + subScore(k) * weights[k], 0) / tw);
+}
+
+function recommendation(s) {
+  if (s >= 80) return 'Strong Buy';
+  if (s >= 65) return 'Buy';
+  if (s >= 45) return 'Hold';
+  if (s >= 30) return 'Sell';
+  return 'Strong Sell';
+}
+
+const REC_COLORS = { 'Strong Buy':'#4ade80','Buy':'#86efac','Hold':'#facc15','Sell':'#fb923c','Strong Sell':'#f87171' };
+function barColor(s) { return s >= 65 ? '#4ade80' : s >= 45 ? '#facc15' : '#f87171'; }
+
+function rebalance(changedKey, newValue) {
+  const delta = newValue - weights[changedKey];
+  if (delta === 0) return;
+  const others = METRIC_ORDER.filter(k => k !== changedKey && weights[k] > 0);
+  if (delta > 0 && others.length === 0) return;
+  const totalOthers = others.reduce((s, k) => s + weights[k], 0);
+  weights[changedKey] = newValue;
+  const raw = {};
+  others.forEach(k => { raw[k] = weights[k] - delta * (weights[k] / totalOthers); });
+  others.forEach(k => { weights[k] = Math.round(raw[k]); });
+  const total = METRIC_ORDER.reduce((s, k) => s + weights[k], 0);
+  if (total !== 100 && others.length > 0) {
+    const largest = others.reduce((m, k) => weights[k] > weights[m] ? k : m, others[0]);
+    weights[largest] += 100 - total;
+  }
+}
+
+function render() {
+  const allKeys = METRIC_ORDER;
+  const score = weightedAvg(allKeys);
+
+  const scoreEl = document.getElementById('score-number');
+  const badge = document.getElementById('badge');
+  const fill = document.getElementById('progress-fill');
+
+  if (score === null) {
+    scoreEl.textContent = '—';
+    badge.textContent = 'Insufficient Data';
+    badge.style.color = '#aaa';
+    badge.style.borderColor = '#aaa';
+    fill.style.width = '0%';
+    return;
+  }
+
+  const rec = recommendation(score);
+  const color = REC_COLORS[rec];
+
+  scoreEl.textContent = String(score);
+  scoreEl.style.color = color;
+  badge.textContent = rec;
+  badge.style.color = color;
+  badge.style.borderColor = color;
+  fill.style.width = score + '%';
+
+  for (const [cat, keys] of Object.entries(CATEGORY_MAP)) {
+    const cs = weightedAvg(keys);
+    const valEl = document.getElementById('cat-' + cat);
+    const barEl = document.getElementById('bar-' + cat);
+    if (cs !== null) {
+      const c = barColor(cs);
+      valEl.textContent = String(cs);
+      valEl.style.color = c;
+      barEl.style.width = cs + '%';
+      barEl.style.backgroundColor = c;
+    } else {
+      valEl.textContent = '—';
+      barEl.style.width = '0%';
+    }
+  }
+
+  // Preset buttons
+  ['growth','value'].forEach(p => {
+    const isActive = currentPreset === p || (currentPreset === 'custom' && lastNamedPreset === p);
+    document.getElementById('btn-' + p).classList.toggle('active', isActive);
+  });
+
+  // Slider values
+  METRIC_ORDER.forEach(key => {
+    const row = document.getElementById('row-' + key);
+    const slider = document.getElementById('slider-' + key);
+    const valEl = document.getElementById('val-' + key);
+    if (!row || !slider || !valEl) return;
+    slider.value = String(weights[key]);
+    valEl.textContent = weights[key] + '%';
+    row.classList.toggle('zero', weights[key] === 0);
+  });
+
+  const resetBtn = document.getElementById('reset-btn');
+  resetBtn.textContent = 'Reset to ' + (lastNamedPreset === 'growth' ? 'Growth' : 'Value') + ' preset';
+}
+
+function buildSliders() {
+  const container = document.getElementById('sliders');
+  METRIC_ORDER.forEach(key => {
+    const row = document.createElement('div');
+    row.id = 'row-' + key;
+    row.className = 'weight-row' + (weights[key] === 0 ? ' zero' : '');
+
+    const label = document.createElement('span');
+    label.className = 'weight-label';
+    label.textContent = DISPLAY_LABELS[key];
+
+    const slider = document.createElement('input');
+    slider.type = 'range';
+    slider.className = 'weight-slider';
+    slider.id = 'slider-' + key;
+    slider.min = '0';
+    slider.max = '100';
+    slider.value = String(weights[key]);
+    slider.setAttribute('aria-label', DISPLAY_LABELS[key] + ' weight');
+    slider.addEventListener('input', function() {
+      rebalance(key, parseInt(this.value, 10));
+      currentPreset = 'custom';
+      render();
+    });
+
+    const valEl = document.createElement('span');
+    valEl.className = 'weight-value';
+    valEl.id = 'val-' + key;
+    valEl.textContent = weights[key] + '%';
+
+    row.appendChild(label);
+    row.appendChild(slider);
+    row.appendChild(valEl);
+    container.appendChild(row);
+  });
+}
+
+document.getElementById('btn-growth').addEventListener('click', function() {
+  weights = Object.assign({}, PRESETS.growth);
+  currentPreset = 'growth'; lastNamedPreset = 'growth'; render();
+});
+document.getElementById('btn-value').addEventListener('click', function() {
+  weights = Object.assign({}, PRESETS.value);
+  currentPreset = 'value'; lastNamedPreset = 'value'; render();
+});
+document.getElementById('reset-btn').addEventListener('click', function() {
+  weights = Object.assign({}, PRESETS[lastNamedPreset]);
+  currentPreset = lastNamedPreset; render();
+});
+document.getElementById('adjust-btn').addEventListener('click', function() {
+  editorOpen = !editorOpen;
+  document.getElementById('editor').classList.toggle('open', editorOpen);
+  this.textContent = editorOpen ? '⚙ Hide weights' : '⚙ Adjust weights';
+});
+
+buildSliders();
+render();
+</script>
+</body>
+</html>
